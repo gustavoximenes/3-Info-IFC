@@ -6,10 +6,27 @@ class Unidade {
     private $tipo;
     private $nome;
 
-    public function __construct($id = 0, $nome = "", $tipo = "") {
+    public function __construct($id = 0) {
         $this->setIdUnidade($id);
-        $this->setTipo($tipo);
-        $this->setNome($nome);
+        if ($id > 0) {
+            $this->carregarDados(); // Carrega os dados da unidade se um ID válido for passado
+        }
+    }
+
+    private function carregarDados() {
+        $sql = "SELECT * FROM unidades WHERE id = :id_unidade";
+        $parametros = [':id_unidade' => $this->id];
+        $conexao = Database::conectar();
+        $stmt = $conexao->prepare($sql);
+        $stmt->execute($parametros);
+        $dados = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        if ($dados) {
+            $this->nome = $dados['unidade'];
+            $this->tipo = $dados['tipo'];
+        } else {
+            throw new Exception("Unidade não encontrada.");
+        }
     }
 
     public function setIdUnidade($id) {
@@ -83,7 +100,7 @@ class Unidade {
             $dados = $stmt->fetch(PDO::FETCH_ASSOC);
 
             if ($dados) {
-                return new Unidade($dados['id'], $dados['unidade'], $dados['tipo']);
+                return new Unidade($dados['id']);
             } else {
                 return null; // Retorna null se não encontrar a unidade
             }
@@ -118,7 +135,7 @@ class Unidade {
         $unidades = [];
 
         while ($forma = $comando->fetch(PDO::FETCH_ASSOC)) {
-            $unidade = new Unidade($forma['id'], $forma['unidade'], $forma['tipo']);
+            $unidade = new Unidade($forma['id']);
             array_push($unidades, $unidade);
         }
 
