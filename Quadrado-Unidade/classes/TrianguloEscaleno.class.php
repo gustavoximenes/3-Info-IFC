@@ -7,24 +7,24 @@ class TrianguloEscaleno {
     private $lado1;
     private $lado2;
     private $lado3;
-    private $unidade;
     private $cor;
+    private $unidade;
 
-    public function __construct($id, $lado1, $lado2, $lado3, Unidade $unidade, $cor) {
+    public function __construct($id, $lado1, $lado2, $lado3, $cor, Unidade $unidade) {
         $this->id = $id;
         $this->lado1 = $lado1;
         $this->lado2 = $lado2;
         $this->lado3 = $lado3;
-        $this->cor = $cor;
-        $this->unidade = $unidade; 
+        $this->cor = $cor; // Adicionando cor
+        $this->unidade = $unidade;
     }
 
     public function getId() { return $this->id; }
     public function getLado1() { return $this->lado1; }
     public function getLado2() { return $this->lado2; }
     public function getLado3() { return $this->lado3; }
+    public function getCor() { return $this->cor; } // Método para obter a cor
     public function getUnidade() { return $this->unidade; }
-    public function getCor() { return $this->cor; }
 
     public static function listar($tipo, $busca) {
         $sql = "SELECT te.*, u.id as id_unidade, u.tipo 
@@ -38,7 +38,7 @@ class TrianguloEscaleno {
         } elseif ($tipo == 3) {
             $sql .= " WHERE te.lado2 = :busca";
         } elseif ($tipo == 4) {
-            $sql .= " WHERE te.lado3 = :busca"; 
+            $sql .= " WHERE te.lado3 = :busca";
         }
 
         $conexao = Database::conectar();
@@ -55,7 +55,7 @@ class TrianguloEscaleno {
         foreach ($result as $row) {
             $id_unidade = $row['id_unidade'];
             $unidade = new Unidade($id_unidade, $row['tipo']);
-            $lista[] = new TrianguloEscaleno($row['id'], $row['lado1'], $row['lado2'], $row['lado3'], $unidade, $row['cor']);
+            $lista[] = new TrianguloEscaleno($row['id'], $row['lado1'], $row['lado2'], $row['lado3'], $row['cor'], $unidade);
         }
         return $lista;
     }
@@ -68,7 +68,7 @@ class TrianguloEscaleno {
                 ':lado1' => $this->lado1,
                 ':lado2' => $this->lado2,
                 ':lado3' => $this->lado3,
-                ':cor' => $this->cor
+                ':cor' => $this->cor // Incluindo a cor nos parâmetros
             ];
 
             return Database::executar($sql_triangulo, $parametros_triangulo);
@@ -77,3 +77,4 @@ class TrianguloEscaleno {
         }
     }
 }
+?>

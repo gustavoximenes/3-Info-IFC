@@ -53,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['acao']) && $_POST['aca
             <a class="nav-link" href="../unidade/index.php">Cadastro de Unidade</a>
         </li>
         <li class="nav-item">
-            <a class="nav-link" href="triangulo_escaleno.php">Triângulos Escalenos</a>
+            <a class="nav-link" href="../Triangulos-Escalenos/index5.php">Triângulos Escalenos</a>
         </li>
     </ul>
 </nav>
