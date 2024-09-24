@@ -40,7 +40,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['acao']) && $_POST['aca
 </head>
 <nav class="mb-4">
     <ul class="nav">
-        
         <li class="nav-item">
             <a class="nav-link" href="../unidade/index.php">Cadastro de Unidade</a>
         </li>
@@ -115,9 +114,20 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['acao']) && $_POST['aca
             <?php
             $lista = Triangulo::listar(0, ""); // Passa valores padrão
             foreach ($lista as $triangulo) {
-                $lado = $triangulo->getLado1(); // Agora todos os lados são iguais
+                $lado = $triangulo->getLado1(); // Todos os lados são iguais
                 $cor = $triangulo->getCor();
                 $unidade = $triangulo->getUnidade()->getNome();
+
+                // Cálculo da área para um triângulo equilátero
+                $area = (sqrt(3) / 4) * pow($lado, 2);
+
+                // Cálculo do perímetro para um triângulo equilátero
+                $perimetro = $lado * 3;
+
+                // Ângulos de um triângulo equilátero são sempre 60
+                $anguloA = 60;
+                $anguloB = 60;
+                $anguloC = 60;
 
                 // Calcular os pontos do triângulo equilátero
                 $altura = ($lado * sqrt(3)) / 2; // Altura de um triângulo equilátero
@@ -129,11 +139,15 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['acao']) && $_POST['aca
                 echo "</svg>";
                 echo "<p>Lado: $lado $unidade</p>";
                 echo "<p>Cor: $cor</p>";
+                echo "<p>Área: " . number_format($area, 2) . " {$unidade}<sup>2</sup></p>";  // Exibe a área
+                echo "<p>Perímetro: " . number_format($perimetro, 2) . " $unidade</p>";  // Exibe o perímetro
+                echo "<p>Ângulo A: $anguloA graus</p>";  // Substitui o símbolo de grau por "graus"
+                echo "<p>Ângulo B: $anguloB graus</p>";  // Substitui o símbolo de grau por "graus"
+                echo "<p>Ângulo C: $anguloC graus</p>";  // Substitui o símbolo de grau por "graus"
                 echo "</div>";
             }
             ?>
         </div>
-
     </div>
 </body>
 

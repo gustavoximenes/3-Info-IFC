@@ -23,7 +23,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['acao']) && $_POST['aca
     $unidade = new Unidade($id_unidade);
 
     // Criação de um novo objeto TrianguloIsosceles
-    $trianguloIsosceles = new TrianguloIsosceles(0, $lado1, $lado2,$cor, $unidade);
+    $trianguloIsosceles = new TrianguloIsosceles(0, $lado1, $lado2, $cor, $unidade);
 
     // Tente incluir o triângulo isósceles no banco de dados
     try {
@@ -125,15 +125,30 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['acao']) && $_POST['aca
                 $cor = $trianguloIsosceles->getCor(); // Supondo que você tenha um método getCor() na classe TrianguloIsosceles
 
                 // Calcular os pontos do triângulo isósceles
-                $points = "0,0 $base,0 " . ($lado * 0.5) . "," . sqrt(($lado * $lado) - (($base * 0.5) * ($base * 0.5)));
+                $altura = sqrt(($lado * $lado) - (($base * 0.5) * ($base * 0.5)));
+                $points = "0,0 $base,0 " . ($base / 2) . ",$altura";
+
+                // Cálculo da área
+                $area = ($base * $altura) / 2;
+
+                // Cálculo do perímetro
+                $perimetro = 2 * $lado + $base;
+
+                // Cálculo dos ângulos (A, B e C)
+                $anguloA = rad2deg(acos($base / (2 * $lado))); // Ângulo no vértice
+                $anguloB = 180 - (2 * $anguloA); // Ângulo da base
 
                 echo "<div class='col-md-4'>";
                 echo "<svg width='100' height='100'>";
-                echo "<polygon points='$points' style='fill:$cor;stroke:black;stroke-width:1' />"; // Use a cor correta aqui
+                echo "<polygon points='$points' style='fill:$cor;stroke:black;stroke-width:1' />";
                 echo "</svg>";
                 echo "<p>Lado: $lado $unidade</p>";
                 echo "<p>Base: $base $unidade</p>";
                 echo "<p>Cor: $cor</p>";
+                echo "<p>Área: " . number_format($area, 2) . " {$unidade}<sup>2</sup></p>";  // Exibe a área
+                echo "<p>Perímetro: " . number_format($perimetro, 2) . " $unidade</p>";  // Exibe o perímetro
+                echo "<p>Ângulo A: " . number_format($anguloA, 2) . "°</p>";  // Adiciona o símbolo de grau corretamente
+                echo "<p>Ângulo B: " . number_format($anguloB, 2) . "°</p>";
                 echo "</div>";
             }
             ?>
