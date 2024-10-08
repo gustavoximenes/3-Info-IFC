@@ -61,7 +61,8 @@ CREATE TABLE triangulos_equilateros (
     altura DOUBLE NOT NULL,
     FOREIGN KEY (id_triangulo) REFERENCES triangulos(id)
 );
-
+drop table triangulos;
+drop table triangulos_equilateros;
 drop table triangulos_isosceles;
 drop table triangulos_escalenos;
 -- Tabela Triângulo Escaleno
@@ -73,7 +74,11 @@ CREATE TABLE triangulos_escalenos (
     lado3 INT NOT NULL,
     FOREIGN KEY (id_triangulo) REFERENCES triangulos(id)
 );
+DELETE FROM triangulos_escalenos WHERE id_triangulo IN (SELECT id FROM triangulos);
+SET SQL_SAFE_UPDATES = 0;
+
 ALTER TABLE triangulos_escalenos ADD COLUMN cor VARCHAR(7);
 SELECT te.*, u.id as id_unidade, u.tipo 
 FROM triangulos_escalenos te 
 JOIN unidades u ON te.id_triangulo = u.id
+

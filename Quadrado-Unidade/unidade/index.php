@@ -1,6 +1,14 @@
 <!DOCTYPE html>
 <html lang="en">
-<?php require_once("unidade.php"); ?>
+<?php
+require_once("unidade.php"); 
+
+// Inicializa variáveis para evitar erros de referência indefinida
+$id = isset($id) ? $id : 0;
+$contato = isset($contato) ? $contato : null;
+$lista = isset($lista) ? $lista : [];
+
+?>
 
 <head>
     <title>Nova Unidade</title>
@@ -24,16 +32,16 @@
 
         <h2>Cadastro de Unidade</h2>
         <form action="unidade.php" method="post">
-            <input type="number" name="id" id="id" value="<?= $id ?>" hidden>
+            <input type="hidden" name="id" id="id" value="<?= $id ?>">
 
             <div class="row mb-3">
                 <div class="col-md-4">
                     <label for="nome_un" class="form-label">Nome da unidade:</label>
-                    <input type="text" class="form-control" name="nome_un" id="nome_un" placeholder="Nome da unidade" value="<?= $id ? $contato->getNome() : "" ?>">
+                    <input type="text" class="form-control" name="nome_un" id="nome_un" placeholder="Nome da unidade" value="<?= $id && $contato ? $contato->getNome() : "" ?>">
                 </div>
                 <div class="col-md-4">
                     <label for="un" class="form-label">Unidade:</label>
-                    <input type="text" class="form-control" name="un" id="un" placeholder="Unidade" value="<?= $id ? $contato->getTipo() : "" ?>">
+                    <input type="text" class="form-control" name="un" id="un" placeholder="Unidade" value="<?= $id && $contato ? $contato->getTipo() : "" ?>">
                 </div>
             </div>
 
@@ -69,18 +77,24 @@
                     <th>Id</th>
                     <th>Nome</th>
                     <th>Unidade</th>
-                    <th>Açoes</th>
+                    <th>Ações</th>
                 </tr>
             </thead>
             <tbody>
-                <?php foreach ($lista as $unidade): ?>
+                <?php if (!empty($lista)): ?>
+                    <?php foreach ($lista as $unidade): ?>
+                        <tr>
+                            <td><a href="index.php?id=<?= $unidade->getIdUnidade() ?>"><?= $unidade->getIdUnidade() ?></a></td>
+                            <td><?= $unidade->getNome() ?></td>
+                            <td><?= $unidade->getTipo() ?></td>
+                            <td><a href="delete.php?id=<?= $unidade->getIdUnidade() ?>" class="btn btn-danger btn-sm">Excluir</a></td>
+                        </tr>
+                    <?php endforeach; ?>
+                <?php else: ?>
                     <tr>
-                        <td><a href="index.php?id=<?= $unidade->getIdUnidade() ?>"><?= $unidade->getIdUnidade() ?></a></td>
-                        <td><?= $unidade->getNome() ?></td>
-                        <td><?= $unidade->getTipo() ?></td>
-                        <td><a href="delete.php?id=<?= $unidade->getIdUnidade() ?>">Excluir</a></td>
+                        <td colspan="4" class="text-center">Nenhuma unidade encontrada</td>
                     </tr>
-                <?php endforeach; ?>
+                <?php endif; ?>
             </tbody>
         </table>
     </div>

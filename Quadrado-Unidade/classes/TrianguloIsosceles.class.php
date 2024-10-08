@@ -73,4 +73,32 @@ class TrianguloIsosceles {
             throw new Exception("Erro ao incluir triângulo isósceles: " . $e->getMessage());
         }
     }
+    public static function deletar($id_triangulo) {
+        // Conectar ao banco de dados
+        $pdo = new PDO("mysql:host=127.0.0.1;port=3307;dbname=geometria;charset=UTF8", "gustavo", "1120");
+        $pdo->setAttribute(PDO::ATTR_ERRMODE, PDO::ERRMODE_EXCEPTION);
+    
+        // Iniciar uma transação
+        $pdo->beginTransaction();
+        try {
+            // Preparar a query para deletar os registros filhos
+            $sqlDeleteFilhos = "DELETE FROM triangulos_escalenos WHERE id_triangulo = :id_triangulo";
+            $stmtFilhos = $pdo->prepare($sqlDeleteFilhos);
+            $stmtFilhos->bindParam(':id_triangulo', $id_triangulo, PDO::PARAM_INT);
+            $stmtFilhos->execute();
+    
+            // Preparar a query para deletar o registro pai
+            $sql = "DELETE FROM triangulos WHERE id = :id_triangulo";
+            $stmt = $pdo->prepare($sql);
+            $stmt->bindParam(':id_triangulo', $id_triangulo, PDO::PARAM_INT);
+            $stmt->execute();
+    
+            // Comitar a transação
+            $pdo->commit();
+        } catch (Exception $e) {
+            // Se algo der errado, reverter a transação
+            $pdo->rollBack();
+            echo "Erro ao deletar: " . $e->getMessage();
+        }
+    }
 }

@@ -4,7 +4,7 @@
 error_reporting(E_ALL);
 ini_set('display_errors', 1);
 
-include_once('../traingulo/triangulo.php');
+include_once('triangulo_equilatero.php'); // Corrigido o caminho do arquivo Triangulo
 require_once("../classes/Unidade.class.php");
 
 // Verifica se a requisição GET foi feita para buscar triângulos
@@ -12,24 +12,47 @@ $busca = isset($_GET['busca']) ? $_GET['busca'] : "";
 $tipo = isset($_GET['tipo']) ? $_GET['tipo'] : 0;
 $lista = Triangulo::listar($tipo, $busca); // Busca os triângulos conforme a busca
 
-if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['acao']) && $_POST['acao'] == 'salvar') {
-    // Captura o lado e a cor do formulário
-    $lado = $_POST['lado']; // Agora apenas um lado, para equilátero
-    $cor = $_POST['cor'];
-    $id_unidade = $_POST['medida']; // Certifique-se de que o campo 'medida' é enviado
+if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['acao'])) {
+    if ($_POST['acao'] == 'salvar') {
+        // Captura o lado e a cor do formulário
+        $lado = floatval($_POST['lado']); // Converte para float
+        $cor = $_POST['cor'];
+        $id_unidade = $_POST['medida']; // Certifique-se de que o campo 'medida' é enviado
 
-    // Criação de um novo objeto Triangulo
-    $unidade = new Unidade($id_unidade);
-    $triangulo = new Triangulo(0, $lado, $lado, $lado, $cor, $unidade); // Todos os lados iguais
+        // Verificação se o lado é maior que 180
+       
+        
 
-    // Tente incluir o triângulo no banco de dados
-    try {
-        $triangulo->incluir();
-        // Redirecionar ou mostrar mensagem de sucesso
-        header("Location: index.php");
-        exit();
-    } catch (Exception $e) {
-        echo "Erro ao salvar: " . $e->getMessage();
+        // Nova verificação: se lado * 3 é maior que 180, impede a criação
+        if ($lado * 3 > 180) {
+            echo "<script>alert('O lado multiplicado por 3 não pode ser maior que 180.'); window.history.back();</script>";
+            exit();
+        }
+
+        // Criação de um novo objeto Triangulo
+        $unidade = new Unidade($id_unidade);
+        $triangulo = new Triangulo(0, $lado, $lado, $lado, $cor, $unidade); // Todos os lados iguais
+
+        // Tente incluir o triângulo no banco de dados
+        try {
+            $triangulo->incluir();
+            // Redirecionar ou mostrar mensagem de sucesso
+            header("Location: index3.php");
+            exit();
+        } catch (Exception $e) {
+            echo "Erro ao salvar: " . $e->getMessage();
+        }
+    } elseif ($_POST['acao'] == 'deletar' && isset($_POST['id_triangulo'])) {
+        // Deleta o triângulo baseado no ID
+        $id_triangulo = $_POST['id_triangulo'];
+
+        try {
+            Triangulo::deletar($id_triangulo);
+            header("Location: index3.php");
+            exit();
+        } catch (Exception $e) {
+            echo "Erro ao deletar: " . $e->getMessage();
+        }
     }
 }
 ?>
@@ -58,7 +81,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['acao']) && $_POST['aca
 <body>
     <div class="container mt-4">
         <h2>Cadastro de Triângulos Equiláteros</h2>
-        <form action="triangulo_equilatero.php" method="post" class="row g-3">
+        <form action="index3.php" method="post" class="row g-3">
             <div class="col-md-4">
                 <label for="lado" class="form-label">Lado:</label>
                 <input type="number" name="lado" id="lado" class="form-control" placeholder="Digite o lado" required>
@@ -144,6 +167,13 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['acao']) && $_POST['aca
                 echo "<p>Ângulo A: $anguloA graus</p>";  // Substitui o símbolo de grau por "graus"
                 echo "<p>Ângulo B: $anguloB graus</p>";  // Substitui o símbolo de grau por "graus"
                 echo "<p>Ângulo C: $anguloC graus</p>";  // Substitui o símbolo de grau por "graus"
+
+                // Formulário para deletar o triângulo
+                echo "<form action='index3.php' method='post' style='display:inline;'>";
+                echo "<input type='hidden' name='id_triangulo' value='" . $triangulo->getId() . "' />";
+                echo "<button type='submit' name='acao' value='deletar' class='btn btn-danger btn-sm'>Deletar</button>";
+                echo "</form>";
+
                 echo "</div>";
             }
             ?>

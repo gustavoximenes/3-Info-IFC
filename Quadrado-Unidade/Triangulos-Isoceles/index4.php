@@ -19,6 +19,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['acao']) && $_POST['aca
     $cor = $_POST['cor'];
     $id_unidade = $_POST['medida']; // Certifique-se de que o campo 'medida' é enviado
 
+    // Validação do triângulo
+    if ($lado1 * 2 + $lado2 == 180) {
+        echo "<script>alert('A soma do lado multiplicado por 2 e a base não pode ser igual a 180.'); window.history.back();</script>";
+        exit();
+    }
+
     // Criação de um novo objeto Unidade
     $unidade = new Unidade($id_unidade);
 
@@ -61,7 +67,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['acao']) && $_POST['aca
 <body>
     <div class="container mt-4">
         <h2>Cadastro de Triângulos Isósceles</h2>
-        <form action="triangulo_isosceles.php" method="post" class="row g-3">
+        <form action="triangulo_isosceles.php" method="post" class="row g-3" onsubmit="return validarEntradas();">
             <div class="col-md-4">
                 <label for="lado" class="form-label">Lado:</label>
                 <input type="number" name="lado" id="lado" class="form-control" placeholder="Digite o lado" required>
@@ -114,7 +120,24 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST' && isset($_POST['acao']) && $_POST['aca
         </form>
 
         <br>
+        <script>
+            function validarEntradas() {
+                const lado1 = parseFloat(document.getElementById('lado').value);
+                const lado2 = parseFloat(document.getElementById('base').value);
 
+                if (lado1 <= 0 || lado2 <= 0) {
+                    alert("Os lados devem ser maiores que zero.");
+                    return false;
+                }
+
+                if (lado1 * 2 + lado2 > 180) {
+                    alert("A soma dos lados deve ser menor ou igual a 180.");
+                    return false;
+                }
+
+                return true;
+            }
+        </script>
         <h2>Triângulos Isósceles Desenhados</h2>
         <div class="row">
             <?php

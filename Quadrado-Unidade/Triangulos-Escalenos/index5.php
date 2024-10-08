@@ -69,7 +69,7 @@ function calcularAngulos($lado1, $lado2, $lado3) {
         <nav class="mb-4">
             <ul class="nav">
                 <li class="nav-item">
-                    <a class="nav-link" href="index.php">Cadastro de Triângulos</a>
+                    <a class="nav-link" href="../traingulo/index2.php">Cadastro de Triângulos</a>
                 </li>
                 <li class="nav-item">
                     <a class="nav-link" href="../unidade/index.php">Cadastro de Unidade</a>
@@ -141,7 +141,25 @@ function calcularAngulos($lado1, $lado2, $lado3) {
                 return true; // Permite o envio do formulário
             }
         </script>
+ <script>
+            function validarLados() {
+                const lado1 = parseFloat(document.getElementById('lado1').value);
+                const lado2 = parseFloat(document.getElementById('lado2').value);
+                const lado3 = parseFloat(document.getElementById('lado3').value);
 
+                if (lado1 <= 0 || lado2 <= 0 || lado3 <= 0) {
+                    alert("Os lados devem ser maiores que zero.");
+                    return false;
+                }
+
+                if (lado1 + lado2 + lado3 > 180) {
+                    alert("A soma dos lados deve ser menor ou igual a 180.");
+                    return false;
+                }
+
+                return true;
+            }
+        </script>
         <hr>
 
         <h2>Pesquisar</h2>

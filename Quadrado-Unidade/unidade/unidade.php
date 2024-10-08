@@ -18,7 +18,6 @@ if ($id > 0) {
 }
 
 // Processa as requisições POST (envio do formulário)
-// Processa as requisições POST (envio do formulário)
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     // Obtém os dados do formulário
     $id = isset($_POST['id']) ? (int)$_POST['id'] : 0;
@@ -26,37 +25,43 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $un = isset($_POST['un']) ? trim($_POST['un']) : "";
     $acao = isset($_POST['acao']) ? $_POST['acao'] : "";
 
-    try {
-        // Cria um novo objeto Unidade com os dados do formulário
-        $unidade = new Unidade($id, $nome_un, $un);
-        $res = false;
+    // Verifica se os campos obrigatórios estão preenchidos
+    if (empty($nome_un) || empty($un)) {
+        echo "Erro: Todos os campos devem ser preenchidos.";
+    } else {
+        try {
+            // Cria um novo objeto Unidade com os dados do formulário
+            $unidade = new Unidade($id, $nome_un, $un);
+            $res = false;
 
-        // Verifica a ação a ser realizada
-        if ($acao === 'Salvar') {
-            if ($id > 0) {
-                $res = $unidade->alterar();
+            // Verifica a ação a ser realizada
+            if ($acao === 'Salvar') {
+                if ($id > 0) {
+                    $res = $unidade->alterar();
+                } else {
+                    $res = $unidade->incluir();
+                }
+            } elseif ($acao === 'Excluir') {
+                if ($id > 0) {
+                    $unidade->setIdUnidade($id);
+                    $res = $unidade->excluir();
+                }
+            }
+
+            // Se a ação foi bem-sucedida, redireciona para a página de lista de unidades
+            if ($res) {
+                header('Location: index.php'); // ou index.php, conforme necessário
+                exit;
             } else {
-                $res = $unidade->incluir();
+                echo "Erro ao inserir dados!";
             }
-        } elseif ($acao === 'Excluir') {
-            if ($id > 0) {
-                $unidade->setIdUnidade($id);
-                $res = $unidade->excluir();
-            }
+        } catch (Exception $e) {
+            echo $e->getMessage();
         }
-
-        // Se a ação foi bem-sucedida, redireciona para a página de lista de unidades
-        if ($res) {
-            header('Location: index.php'); // ou index.php, conforme necessário
-            exit;
-        } else {
-            echo "Erro ao inserir dados!";
-        }
-    } catch (Exception $e) {
-        echo $e->getMessage();
     }
 } elseif ($_SERVER['REQUEST_METHOD'] == 'GET') { // Processa as requisições GET (busca de unidades)
     $busca = isset($_GET['busca']) ? trim($_GET['busca']) : "";
     $tipo = isset($_GET['tipo']) ? (int)$_GET['tipo'] : 0;
     $lista = Unidade::listar($tipo, $busca);
 }
+?>
