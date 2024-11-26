@@ -1,24 +1,22 @@
 <?php
 include 'database.php';
+include 'Categoria.php';
 session_start();
 
-// Check if the user is an admin (assuming level 2 is an admin)
+// Verifica se o usuário é administrador (nível de permissão 2)
 if (!isset($_SESSION['user_id']) || $_SESSION['nivelPermissao'] != 2) {
     header("Location: index.php");
     exit();
 }
 
+$mensagem = "";
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $descricao = $_POST['descricao'];
     $titulo = $_POST['titulo'];
 
-    // Insert the new category into the Categorias table
-    $sql = "INSERT INTO Categorias (descricao, titulo) VALUES ('$descricao', '$titulo')";
-    if ($conn->query($sql) === TRUE) {
-        echo "<p>Categoria adicionada com sucesso!</p>";
-    } else {
-        echo "<p>Erro: " . $sql . "<br>" . $conn->error . "</p>";
-    }
+    // Instancia a classe Categoria e adiciona a categoria
+    $categoria = new Categoria($conn);
+    $mensagem = $categoria->adicionarCategoria($descricao, $titulo);
 }
 ?>
 
@@ -32,6 +30,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <?php include 'navbar.php'; ?>
 <div class="container">
     <h2>Adicionar Nova Categoria</h2>
+    <!-- Exibe mensagens de sucesso ou erro -->
+    <?php if ($mensagem): ?>
+        <div class="alert alert-info"><?= $mensagem ?></div>
+    <?php endif; ?>
+
     <form method="post">
         <div class="form-group">
             <label for="descricao">Descrição:</label>

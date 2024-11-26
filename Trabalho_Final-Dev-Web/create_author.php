@@ -1,5 +1,6 @@
 <?php
 include 'database.php';
+include 'Autor.php';
 session_start();
 
 // Verifica se o usuário é administrador (nivelPermissao 2)
@@ -8,17 +9,14 @@ if (!isset($_SESSION['user_id']) || !isset($_SESSION['nivelPermissao']) || $_SES
     exit();
 }
 
+$mensagem = "";
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $nome = $_POST['nome'];
     $sobrenome = $_POST['sobrenome'];
 
-    // Insere o novo autor no banco de dados
-    $sql = "INSERT INTO Autor (nome, sobrenome) VALUES ('$nome', '$sobrenome')";
-    if ($conn->query($sql) === TRUE) {
-        echo "Autor adicionado com sucesso.";
-    } else {
-        echo "Erro: " . $sql . "<br>" . $conn->error;
-    }
+    // Instancia a classe Autor e adiciona o autor
+    $autor = new Autor($conn);
+    $mensagem = $autor->adicionarAutor($nome, $sobrenome);
 }
 ?>
 
@@ -32,6 +30,11 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <?php include 'navbar.php'; ?>
 <div class="container">
     <h2>Adicionar Novo Autor</h2>
+    <!-- Exibe mensagens de sucesso ou erro -->
+    <?php if ($mensagem): ?>
+        <div class="alert alert-info"><?= $mensagem ?></div>
+    <?php endif; ?>
+
     <form method="post">
         <div class="form-group">
             <label for="nome">Nome:</label>
