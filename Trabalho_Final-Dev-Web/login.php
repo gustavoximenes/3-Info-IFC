@@ -1,24 +1,29 @@
 <?php
 include 'database.php';
+include 'Cliente.php';
+
 session_start();
+$mensagemErro = "";
 
 if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     $email = $_POST['email'];
     $senha = $_POST['senha'];
 
-    $sql = "SELECT * FROM Usuario WHERE email = '$email'";
-    $result = $conn->query($sql);
-    if ($result->num_rows > 0) {
-        $user = $result->fetch_assoc();
-        if (password_verify($senha, $user['senha'])) {
-            $_SESSION['user_id'] = $user['id'];
-            $_SESSION['nivelPermissao'] = $user['nivelPermissao']; // Armazenando o nível de permissão
-            header("Location: index.php");
-        } else {
-            echo "Credenciais inválidas";
-        }
+    // Instancia a classe Cliente
+    $cliente = new Cliente($conn);
+
+    // Tenta autenticar o usuário
+    $user = $cliente->autenticar($email, $senha);
+
+    if ($user) {
+        // Registra a sessão para o usuário autenticado
+        $cliente->registrarSessao($user);
+
+        // Redireciona para a página inicial
+        header("Location: index.php");
+        exit();
     } else {
-        echo "Usuário não encontrado";
+        $mensagemErro = "Credenciais inválidas ou usuário não encontrado.";
     }
 }
 ?>
@@ -33,6 +38,12 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
 <?php include 'navbar.php'; ?>
 <div class="container">
     <h2>Login</h2>
+
+    <!-- Exibe mensagem de erro, se houver -->
+    <?php if ($mensagemErro): ?>
+        <div class="alert alert-danger"><?= $mensagemErro ?></div>
+    <?php endif; ?>
+
     <form method="post">
         <div class="form-group">
             <label for="email">Email:</label>
